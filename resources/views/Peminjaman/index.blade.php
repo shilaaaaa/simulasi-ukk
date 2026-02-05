@@ -1,0 +1,96 @@
+<script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<div class="space-y-6">
+
+    <!-- Title -->
+    <h1 class="text-2xl font-bold">📋 Data Peminjaman</h1>
+
+    <!-- Search + Button -->
+    <div class="flex flex-wrap items-center gap-3">
+        <form action="{{ route('peminjaman.index') }}" method="GET" class="flex gap-2">
+            <input type="text"
+                   name="search"
+                   placeholder="Cari nama peminjam / barang"
+                   value="{{ $keyword ?? '' }}"
+                   class="w-64 rounded-md border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+
+            <button type="submit"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-semibold">
+                Cari
+            </button>
+
+            @if(!empty($keyword))
+                <a href="{{ route('peminjaman.index') }}"
+                   class="px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100">
+                    Reset
+                </a>
+            @endif
+        </form>
+
+        <a href="{{ route('peminjaman.create') }}"
+           class="ml-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-semibold">
+            ➕ Tambah
+        </a>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto bg-white shadow rounded-lg">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                    <th class="px-4 py-3 text-left">ID Inventaris</th>
+                    <th class="px-4 py-3 text-left">Barang</th>
+                    <th class="px-4 py-3 text-left">Stok</th>
+                    <th class="px-4 py-3 text-left">Peminjam</th>
+                    <th class="px-4 py-3 text-left">Tgl Pinjam</th>
+                    <th class="px-4 py-3 text-left">Tgl Kembali</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Petugas</th>
+                    <th class="px-4 py-3 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                @foreach ($peminjaman as $p)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2">{{ $p->inventaris->id_unique }}</td>
+                    <td class="px-4 py-2 font-semibold">{{ $p->inventaris->nama_barang }}</td>
+                    <td class="px-4 py-2">{{ $p->inventaris->stok }}</td>
+                    <td class="px-4 py-2">{{ $p->nama_peminjam }}</td>
+                    <td class="px-4 py-2">{{ $p->tgl_pinjam }}</td>
+                    <td class="px-4 py-2">{{ $p->tgl_kembali }}</td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 rounded text-xs font-semibold
+                            {{ $p->status == 'Sudah Kembali'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-yellow-100 text-yellow-700' }}">
+                            {{ $p->status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2">{{ $p->petugas }}</td>
+                    <td class="px-4 py-2 text-center space-x-2">
+                        <a href="{{ route('peminjaman.edit', $p->id) }}"
+                           class="text-blue-600 hover:underline">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('peminjaman.destroy', $p->id) }}"
+                              method="POST"
+                              class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    onclick="return confirm('Yakin hapus data?')"
+                                    class="text-red-600 hover:underline">
+                                Hapus
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+</div>
